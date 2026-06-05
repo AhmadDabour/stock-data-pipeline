@@ -8,4 +8,4 @@ pydantic
 redis
 yfinance
 pytest
-httpx
+httpx2
