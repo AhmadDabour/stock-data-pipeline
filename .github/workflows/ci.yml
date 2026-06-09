@@ -40,6 +40,10 @@ jobs:
           env:
              DATABASE_URL: ${{secrets.DATABASE_URL}}
           run: alembic upgrade head
+        - name: Debug DB host
+          env:
+            DATABASE_URL: ${{secrets.DATABASE_URL}}
+          run: python -c "import os; u=os.getenv('DATABASE_URL',''); print('host:', u.split('@')[1].split('/')[0] if '@' in u else 'not set')"
         - name: Run tests
           env:
             DATABASE_URL: ${{secrets.DATABASE_URL}}

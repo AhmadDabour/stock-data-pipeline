@@ -4,10 +4,12 @@ from app.models.price import Price
 from app.database import SessionLocal
 from sqlalchemy import text
 import datetime
-
+import os
 @pytest.fixture(scope="session")
 def ingestion():
     db = SessionLocal()
+    db_url = os.getenv("DATABASE_URL", "")
+    assert "localhost" in db_url or "127.0.0.1" in db_url, f"Refusing to run tests against a non local databse {db_url}"
     new_comp = Company(
         ticker="test",
         name="test",

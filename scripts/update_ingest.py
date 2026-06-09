@@ -4,6 +4,7 @@ from app.database import SessionLocal
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 import yfinance as yf
+import datetime
 
 TICKERS = [
     "AAPL", "MSFT", "GOOGL", "NVDA", "META", "AMZN", "AMD", "INTC", "CRM", "ORCL",
@@ -69,12 +70,18 @@ def upsert_price(db, ticker, index, row):
 
 db = SessionLocal()
 for i in TICKERS:
-    ticker = yf.Ticker(i)
-    info = ticker.info
-    max_date = db.query(func.max(Price.date)).filter(Price.ticker == i).scalar()
-    df = ticker.history(start=max_date)
-    upsert_company(db, i, info)
-    for index, row in df.iterrows():
-        upsert_price(db, i, index, row)
+    try:
+        ticker = yf.Ticker(i)
+        info = ticker.info
+        max_date = db.query(func.max(Price.date)).filter(Price.ticker == i).scalar()
+        start_date = max_date + datetime.timedelta(days=1) if max_date else None
+        df = ticker.history(start=start_date)
+        upsert_company(db, i, info)
+        for index, row in df.iterrows():
+            upsert_price(db, i, index, row)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"Failed on {i} {e}")
 
 db.commit()
