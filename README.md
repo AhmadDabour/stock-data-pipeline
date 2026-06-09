@@ -2,7 +2,7 @@
 
 A stock analytics API built with FastAPI, PostgreSQL, Redis, and Docker; deployed on AWS.
 
-**Live API:** http://18.191.141.248:8000/docs
+**Live API:** http://3.135.1.12:8000/docs
 
 ---
 
